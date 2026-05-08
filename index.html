@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --line: rgba(255,255,255,0.07);
+    --line2: rgba(255,255,255,0.12);
+    --text: #f0ede6;
+    --muted: #888880;
+    --accent1: #d4f55c;
+    --accent2: #5cf5c8;
+    --accent3: #f55c8a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  nav.scrolled {
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(20px);
+    border-color: var(--line);
+  }
+
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--accent1); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-login {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--bg);
+    background: var(--text);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    padding: 7px 18px;
+    border-radius: 3px;
+    transition: opacity 0.2s;
+  }
+
+  .nav-login:hover { opacity: 0.8; }
+
+  .btn-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--bg);
+    background: var(--text);
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 3px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .btn-hero:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 40px;
+    z-index: 1;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-content {
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent1);
+  }
+
+  h1 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 56px;
+  }
+
+  .hero-scroll {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+  }
+
+  /* COUNTER */
+  .hero-stats {
+    position: absolute;
+    right: 40px;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--text);
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* PROJECTS SECTION */
+  .projects {
+    position: relative;
+    z-index: 1;
+    padding: 120px 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 80px;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* PROJECT CARDS */
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .project-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    align-items: center;
+    gap: 32px;
+    padding: 40px 48px;
+    border: 1px solid var(--line);
+    background: var(--bg2);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.25s, border-color 0.25s;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    transform: scaleY(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom;
+  }
+
+  .card-1::before { background: var(--accent1); }
+  .card-2::before { background: var(--accent2); }
+  .card-3::before { background: var(--accent3); }
+
+  .project-card:hover {
+    background: var(--bg3);
+    border-color: var(--line2);
+  }
+
+  .project-card:hover::before {
+    transform: scaleY(1);
+  }
+
+  .card-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    font-style: italic;
+  }
+
+  .card-body { min-width: 0; }
+
+  .card-tags {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-weight: 400;
+  }
+
+  .tag-zip { background: rgba(212,245,92,0.08); color: var(--accent1); border: 1px solid rgba(212,245,92,0.15); }
+  .tag-chimi { background: rgba(92,245,200,0.08); color: var(--accent2); border: 1px solid rgba(92,245,200,0.15); }
+  .tag-music { background: rgba(245,92,138,0.08); color: var(--accent3); border: 1px solid rgba(245,92,138,0.15); }
+  .tag-neutral { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--line); }
+
+  .card-title {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    line-height: 1.1;
+  }
+
+  .card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  .card-arrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    color: var(--muted);
+    transition: transform 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .project-card:hover .card-arrow {
+    transform: translate(4px, -4px);
+    color: var(--text);
+  }
+
+  /* CARD HOVER GLOW */
+  .project-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .card-1::after { background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(212,245,92,0.04), transparent); }
+  .card-2::after { background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(92,245,200,0.04), transparent); }
+  .card-3::after { background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(245,92,138,0.04), transparent); }
+
+  .project-card:hover::after { opacity: 1; }
+
+  /* FEATURE BADGES inside cards */
+  .card-features {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .feat {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    padding: 2px 7px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ABOUT */
+  .about {
+    position: relative;
+    z-index: 1;
+    padding: 80px 40px 160px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .about-left h2 {
+    font-size: 42px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  .about-left p {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.8;
+    max-width: 400px;
+  }
+
+  .about-right {
+    padding-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .about-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .about-row:first-child { border-top: 1px solid var(--line); }
+
+  .about-row-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .about-row-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    letter-spacing: 0.06em;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    padding: 32px 40px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .footer-mark {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent1);
+    animation: blink 2.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* FADE-IN ANIMATION */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .hero, .projects { padding-left: 20px; padding-right: 20px; }
+    h1 { font-size: 48px; }
+    .project-card {
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      padding: 28px 24px;
+    }
+    .card-num { display: none; }
+    .about { grid-template-columns: 1fr; gap: 40px; padding: 60px 20px 80px; }
+    footer { padding: 24px 20px; flex-direction: column; gap: 12px; text-align: center; }
+    .hero-stats { display: none; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo">_lab<span>.</span>dev</a>
+  <ul class="nav-links">
+    <li><a href="#projects">Progetti</a></li>
+    <li><a href="#about">Info</a></li>
+  </ul>
+  <a href="login.html" class="nav-login" id="navLogin">Login →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow fade-up">Portfolio — 2026</p>
+    <h1 class="fade-up" style="transition-delay:0.1s">
+      Piccoli<br>strumenti<br><em>potenti</em>
+    </h1>
+    <p class="hero-sub fade-up" style="transition-delay:0.2s">
+      Tre tool web costruiti con cura. Compressione, chimica, musica — ognuno con la sua logica, ognuno con il suo ritmo.
+    </p>
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:40px;" class="fade-up" style="transition-delay:0.25s">
+      <a href="login.html" class="btn-hero" id="btnHero">Accedi →</a>
+    </div>
+    <div class="hero-scroll fade-up" style="transition-delay:0.3s">
+      <div class="scroll-line"></div>
+      <span>scroll</span>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-num">3</span>
+      <span class="stat-label">progetti</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">usi</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="section-header fade-up">
+    <span class="section-num">01</span>
+    <div class="section-line"></div>
+    <span class="section-label">Progetti</span>
+  </div>
+
+  <div class="project-list">
+
+    <a href="https://ziplab.vercel.app" target="_blank" class="project-card card-1 fade-up">
+      <span class="card-num">01</span>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="tag tag-zip">Utility</span>
+          <span class="tag tag-neutral">Electron</span>
+          <span class="tag tag-neutral">Web</span>
+        </div>
+        <h2 class="card-title">ZipLab</h2>
+        <p class="card-desc">Laboratorio personale per la compressione file. Drag & drop, protezione password, sistema XP per salire di livello mentre comprimi.</p>
+        <div class="card-features">
+          <span class="feat">3 livelli compressione</span>
+          <span class="feat">password encrypt</span>
+          <span class="feat">anteprima ZIP</span>
+          <span class="feat">offline</span>
+        </div>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a href="https://chimilab.vercel.app" target="_blank" class="project-card card-2 fade-up" style="transition-delay:0.08s">
+      <span class="card-num">02</span>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="tag tag-chimi">Educazione</span>
+          <span class="tag tag-neutral">Quiz</span>
+          <span class="tag tag-neutral">Interattivo</span>
+        </div>
+        <h2 class="card-title">ChimiLab</h2>
+        <p class="card-desc">Impara la chimica con quiz, flashcard, tavola periodica interattiva e un costruttore di atomi. XP e classifiche globali per restare motivato.</p>
+        <div class="card-features">
+          <span class="feat">tavola periodica</span>
+          <span class="feat">costruisci atomo</span>
+          <span class="feat">flashcard</span>
+          <span class="feat">classifica XP</span>
+        </div>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a href="https://miusiclab.vercel.app" target="_blank" class="project-card card-3 fade-up" style="transition-delay:0.16s">
+      <span class="card-num">03</span>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="tag tag-music">Musica</span>
+          <span class="tag tag-neutral">Web Audio</span>
+          <span class="tag tag-neutral">Electron</span>
+        </div>
+        <h2 class="card-title">MusicLab</h2>
+        <p class="card-desc">Studio musicale nel browser. Piano interattivo, step sequencer, libreria accordi e metronomo — tutto locale, zero dipendenze cloud.</p>
+        <div class="card-features">
+          <span class="feat">piano interattivo</span>
+          <span class="feat">step sequencer</span>
+          <span class="feat">libreria accordi</span>
+          <span class="feat">metronomo pro</span>
+        </div>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-left fade-up">
+    <h2>Strumenti<br>costruiti<br>bene.</h2>
+    <p>Ogni progetto nasce da un'esigenza reale. Nessuna dipendenza inutile, nessun dato nel cloud. Locali, veloci, diretti.</p>
+  </div>
+  <div class="about-right fade-up" style="transition-delay:0.1s">
+    <div class="about-row">
+      <span class="about-row-label">Stack</span>
+      <span class="about-row-val">Electron · Web API · Vanilla JS</span>
+    </div>
+    <div class="about-row">
+      <span class="about-row-label">Filosofia</span>
+      <span class="about-row-val">Offline first · Privacy</span>
+    </div>
+    <div class="about-row">
+      <span class="about-row-label">Progetti</span>
+      <span class="about-row-val">3 rilasciati</span>
+    </div>
+    <div class="about-row">
+      <span class="about-row-label">Anno</span>
+      <span class="about-row-val">2025 — 2026</span>
+    </div>
+    <div class="about-row">
+      <span class="about-row-label">Deploy</span>
+      <span class="about-row-val">Vercel</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2026 — tutti i lab</span>
+  <span class="footer-mark">
+    <span class="dot"></span>
+    online
+  </span>
+</footer>
+
+<script>
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCQlHzl9LwjuHgBa0702_bwpvnNgRSfSnw",
+    authDomain:        "portafoglio-proggetti.firebaseapp.com",
+    projectId:         "portafoglio-proggetti",
+    storageBucket:     "portafoglio-proggetti.firebasestorage.app",
+    messagingSenderId: "1081645087006",
+    appId:             "1:1081645087006:web:28fb12b11e12189f99f10f"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  await setPersistence(auth, browserLocalPersistence);
+
+  const navLogin  = document.getElementById('navLogin');
+  const btnHero   = document.getElementById('btnHero');
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const name = user.displayName || user.email.split('@')[0];
+      // Sostituisci il pulsante login con nome + esci
+      navLogin.outerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:0.06em">
+          <span>${name}</span>
+          <a href="#" id="logoutBtn" style="color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:6px 14px;border-radius:3px;transition:color 0.2s">Esci</a>
+        </div>`;
+      document.getElementById('logoutBtn')?.addEventListener('click', async e => {
+        e.preventDefault();
+        await signOut(auth);
+        window.location.reload();
+      });
+      // Nascondi il pulsante "Accedi" nell'hero
+      if (btnHero) btnHero.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>

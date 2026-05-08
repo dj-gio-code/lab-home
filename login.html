@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-left: #e8e6e0;
+    --orange: #f5692a;
+    --purple: #6c4fe0;
+    --yellow: #f5c842;
+    --dark:   #1a1a1a;
+    --form-bg: #ffffff;
+    --text-main: #1a1a1a;
+    --text-muted: #999;
+    --border: #e0ddd6;
+    --btn: #1a1a1a;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  body {
+    display: flex;
+    min-height: 100vh;
+    background: var(--form-bg);
+  }
+
+  /* ─── LEFT PANEL ─── */
+  .left {
+    flex: 0 0 55%;
+    background: var(--bg-left);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 0;
+  }
+
+  /* ─── CHARACTERS STAGE ─── */
+  .stage {
+    position: relative;
+    width: 340px;
+    height: 300px;
+    margin-bottom: 0;
+  }
+
+  /* ── ORANGE character ── */
+  .char-orange {
+    position: absolute;
+    bottom: 0;
+    left: 10px;
+    width: 130px;
+    height: 130px;
+    transform-origin: bottom center;
+    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .char-orange .body {
+    width: 130px;
+    height: 130px;
+    background: var(--orange);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .char-orange .face {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    transition: transform 0.4s ease;
+  }
+
+  .eye {
+    width: 10px;
+    height: 10px;
+    background: var(--dark);
+    border-radius: 50%;
+    position: relative;
+    transition: transform 0.3s ease, width 0.3s, height 0.3s;
+    flex-shrink: 0;
+  }
+
+  /* ── PURPLE character ── */
+  .char-purple {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 200px;
+    transform-origin: bottom center;
+    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .char-purple .body {
+    width: 90px;
+    height: 200px;
+    background: var(--purple);
+    border-radius: 18px 18px 6px 6px;
+    position: relative;
+  }
+
+  .char-purple .face {
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    transition: transform 0.4s ease;
+  }
+
+  /* ── YELLOW / DARK character ── */
+  .char-yellow {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    width: 85px;
+    height: 110px;
+    transform-origin: bottom center;
+    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .char-yellow .body {
+    width: 85px;
+    height: 110px;
+    background: var(--yellow);
+    border-radius: 50% 50% 8px 8px / 40% 40% 8px 8px;
+    position: relative;
+  }
+
+  .char-yellow .face {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: transform 0.4s ease;
+  }
+
+  /* ── EYE COVER (hands over eyes) ── */
+  .hand-cover {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 60px;
+    height: 22px;
+    background: var(--dark);
+    border-radius: 12px;
+    transform-origin: center;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 10;
+  }
+
+  .char-purple .hand-cover {
+    top: calc(18% - 6px);
+    width: 60px;
+    height: 20px;
+  }
+
+  /* Peek: eyes peek over the cover when toggle is clicked */
+  .peeking .eye {
+    transform: translateY(-8px) !important;
+  }
+
+  /* ── IDLE BOB ── */
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  .char-orange { animation: bob 2.8s ease-in-out infinite; }
+  .char-purple { animation: bob 2.4s ease-in-out infinite 0.3s; }
+  .char-yellow { animation: bob 3.1s ease-in-out infinite 0.7s; }
+
+  .no-bob { animation: none !important; }
+
+  /* Look-right tilt */
+  .look-right { transform: rotate(6deg) !important; }
+  .char-purple.look-right { transform: translateX(-50%) rotate(6deg) !important; }
+
+  /* ─── RIGHT PANEL ─── */
+  .right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 56px;
+    position: relative;
+  }
+
+  .logo-cross {
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text-main);
+    line-height: 1;
+    user-select: none;
+  }
+
+  .form-wrap {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .form-wrap h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+
+  .form-wrap .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin-bottom: 32px;
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .field-wrap {
+    position: relative;
+  }
+
+  .field input {
+    width: 100%;
+    height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 0 40px 0 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-main);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .field input:focus {
+    border-color: var(--dark);
+    box-shadow: 0 0 0 3px rgba(26,26,26,0.06);
+  }
+
+  .toggle-pw {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  .toggle-pw:hover { color: var(--text-main); }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    margin-top: 4px;
+  }
+
+  .remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .remember input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--dark);
+    cursor: pointer;
+  }
+
+  .forgot {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .forgot:hover { color: var(--text-main); }
+
+  .btn-login {
+    width: 100%;
+    height: 46px;
+    background: var(--btn);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background 0.2s, transform 0.15s;
+    margin-bottom: 12px;
+  }
+
+  .btn-login:hover { background: #2d2d2d; }
+  .btn-login:active { transform: scale(0.98); }
+
+  .btn-google {
+    width: 100%;
+    height: 46px;
+    background: #fff;
+    color: var(--text-main);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-google:hover { border-color: #bbb; background: #fafafa; }
+
+  .google-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .signup-cta {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .signup-cta a {
+    color: var(--text-main);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid var(--text-main);
+    padding-bottom: 1px;
+    transition: opacity 0.2s;
+  }
+
+  .signup-cta a:hover { opacity: 0.6; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    body { flex-direction: column; }
+    .left { flex: 0 0 220px; padding-bottom: 0; }
+    .stage { width: 260px; height: 200px; transform: scale(0.8); transform-origin: bottom center; }
+    .right { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LEFT: Characters -->
+<div class="left">
+  <div class="stage" id="stage">
+
+    <!-- ORANGE -->
+    <div class="char-orange" id="charOrange">
+      <div class="body">
+        <div class="face" id="faceOrange">
+          <div class="eye" id="eyeOL"></div>
+          <div class="eye" id="eyeOR"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PURPLE (tallest, center) -->
+    <div class="char-purple" id="charPurple">
+      <div class="body">
+        <div class="hand-cover" id="coverPurple"></div>
+        <div class="face" id="facePurple">
+          <div class="eye" id="eyePL"></div>
+          <div class="eye" id="eyePR"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YELLOW -->
+    <div class="char-yellow" id="charYellow">
+      <div class="body">
+        <div class="hand-cover" id="coverYellow"></div>
+        <div class="face" id="faceYellow">
+          <div class="eye" id="eyeYL"></div>
+          <div class="eye" id="eyeYR"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- RIGHT: Form -->
+<div class="right">
+  <div class="logo-cross">+</div>
+
+  <div class="form-wrap">
+    <h1>Welcome back!</h1>
+    <p class="subtitle">Please enter your details</p>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <div class="field-wrap">
+        <input type="email" id="email" placeholder="" autocomplete="email">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <div class="field-wrap">
+        <input type="password" id="password" placeholder="" autocomplete="current-password">
+        <button class="toggle-pw" id="togglePw" type="button" aria-label="Mostra/nascondi password">
+          <!-- Eye icon -->
+          <svg id="eyeIcon" class="google-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <label class="remember">
+        <input type="checkbox"> Remember for 30 days
+      </label>
+      <a href="forgot-password.html" class="forgot">Forgot password?</a>
+    </div>
+
+    <!-- Error message -->
+    <div id="errorMsg" style="display:none; background:#fff0f0; border:1px solid #fcc; border-radius:8px; padding:10px 14px; font-size:13px; color:#c0392b; margin-bottom:14px;"></div>
+
+    <button class="btn-login" id="btnLogin">Log in</button>
+
+    <button class="btn-google" id="btnGoogle">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Log in with Google
+    </button>
+
+    <p class="signup-cta">Don't have an account? <a href="signup.html">Sign Up</a></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FIREBASE CONFIG — incolla qui le tue credenziali
+     Console Firebase → Project Settings → Your apps → SDK setup
+     ═══════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword,
+           signInWithPopup, GoogleAuthProvider,
+           setPersistence, browserLocalPersistence,
+           browserSessionPersistence }            from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCQlHzl9LwjuHgBa0702_bwpvnNgRSfSnw",
+    authDomain:        "portafoglio-proggetti.firebaseapp.com",
+    projectId:         "portafoglio-proggetti",
+    storageBucket:     "portafoglio-proggetti.firebasestorage.app",
+    messagingSenderId: "1081645087006",
+    appId:             "1:1081645087006:web:28fb12b11e12189f99f10f"
+  };
+
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  /* ── DOM refs ── */
+  const emailInput = document.getElementById('email');
+  const pwInput    = document.getElementById('password');
+  const remember   = document.querySelector('.remember input[type="checkbox"]');
+  const btnLogin   = document.getElementById('btnLogin');
+  const btnGoogle  = document.getElementById('btnGoogle');
+  const errorMsg   = document.getElementById('errorMsg');
+  const togglePw   = document.getElementById('togglePw');
+  const eyeIcon    = document.getElementById('eyeIcon');
+
+  const charOrange = document.getElementById('charOrange');
+  const charPurple = document.getElementById('charPurple');
+  const charYellow = document.getElementById('charYellow');
+  const coverPurple = document.getElementById('coverPurple');
+  const coverYellow = document.getElementById('coverYellow');
+  const faceOrange = document.getElementById('faceOrange');
+  const facePurple = document.getElementById('facePurple');
+  const faceYellow = document.getElementById('faceYellow');
+
+  let pwVisible = false;
+
+  /* ── UI helpers ── */
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.style.display = 'block';
+  }
+  function hideError() {
+    errorMsg.style.display = 'none';
+  }
+  function setLoading(btn, on) {
+    btn.disabled = on;
+    btn.style.opacity = on ? '0.6' : '1';
+    btn.style.cursor  = on ? 'wait' : '';
+  }
+
+  function firebaseError(code) {
+    const map = {
+      'auth/user-not-found':      'Nessun account con questa email.',
+      'auth/wrong-password':      'Password errata. Riprova.',
+      'auth/invalid-email':       'Email non valida.',
+      'auth/invalid-credential':  'Email o password errati.',
+      'auth/too-many-requests':   'Troppi tentativi. Attendi qualche minuto.',
+      'auth/popup-closed-by-user':'Popup chiuso prima del completamento.',
+      'auth/network-request-failed': 'Errore di rete. Controlla la connessione.',
+    };
+    return map[code] || 'Errore: ' + code;
+  }
+
+  /* ── Character animation helpers ── */
+  function stopBob(...chars) { chars.forEach(c => c.classList.add('no-bob')); }
+  function startBob(...chars) { chars.forEach(c => c.classList.remove('no-bob')); }
+
+  function coverEyes(cover, face) {
+    cover.style.transform = 'translateX(-50%) scaleX(1)';
+    face.style.opacity = '0.15';
+  }
+  function uncoverEyes(cover, face) {
+    cover.style.transform = 'translateX(-50%) scaleX(0)';
+    face.style.opacity = '1';
+  }
+  function peekEyes(face) {
+    face.querySelectorAll('.eye').forEach(e => e.style.transform = 'translateY(-9px)');
+  }
+  function unpeekEyes(face) {
+    face.querySelectorAll('.eye').forEach(e => e.style.transform = '');
+  }
+  function lookRight() {
+    charOrange.style.transform = 'rotate(4deg)';
+    charPurple.style.transform = 'translateX(-50%) rotate(3deg)';
+    charYellow.style.transform = 'rotate(5deg)';
+    [faceOrange, facePurple, faceYellow].forEach(f => {
+      f.style.transform = 'translateX(calc(-50% + 4px))';
+    });
+  }
+  function resetLook() {
+    charOrange.style.transform = '';
+    charPurple.style.transform = 'translateX(-50%)';
+    charYellow.style.transform = '';
+    [faceOrange, facePurple, faceYellow].forEach(f => f.style.transform = 'translateX(-50%)');
+  }
+  function setPasswordMode(on) {
+    if (on) {
+      stopBob(charOrange, charPurple, charYellow);
+      coverEyes(coverPurple, facePurple);
+      coverEyes(coverYellow, faceYellow);
+      charOrange.style.transform = 'rotate(-10deg)';
+      faceOrange.style.transform = 'translateX(calc(-50% - 4px))';
+    } else {
+      startBob(charOrange, charPurple, charYellow);
+      uncoverEyes(coverPurple, facePurple);
+      uncoverEyes(coverYellow, faceYellow);
+      resetLook();
+    }
+  }
+  function bounceChars() {
+    [charOrange, charPurple, charYellow].forEach((c, i) => {
+      c.classList.remove('no-bob');
+      c.style.animation = 'none';
+      c.style.transform = 'translateY(-16px)' + (c === charPurple ? ' translateX(-50%)' : '');
+      setTimeout(() => {
+        c.style.transform = c === charPurple ? 'translateX(-50%)' : '';
+        c.style.animation = '';
+        setTimeout(() => c.classList.add('no-bob'), 600);
+      }, 120 + i * 60);
+    });
+  }
+
+  /* ── Email field events ── */
+  emailInput.addEventListener('focus', () => {
+    stopBob(charOrange, charPurple, charYellow);
+    resetLook(); lookRight();
+  });
+  emailInput.addEventListener('blur', () => {
+    if (document.activeElement !== pwInput) {
+      startBob(charOrange, charPurple, charYellow); resetLook();
+    }
+  });
+  emailInput.addEventListener('input', lookRight);
+
+  /* ── Password field events ── */
+  pwInput.addEventListener('focus', () => {
+    setPasswordMode(true);
+    unpeekEyes(facePurple); unpeekEyes(faceYellow);
+  });
+  pwInput.addEventListener('blur', () => {
+    if (document.activeElement !== togglePw) {
+      setPasswordMode(false);
+    }
+  });
+
+  /* ── Toggle password visibility ── */
+  togglePw.addEventListener('mousedown', e => e.preventDefault());
+  togglePw.addEventListener('click', () => {
+    pwVisible = !pwVisible;
+    pwInput.type = pwVisible ? 'text' : 'password';
+    if (pwVisible) {
+      peekEyes(facePurple); peekEyes(faceYellow);
+      charOrange.style.transform = 'rotate(5deg)';
+      faceOrange.style.transform = 'translateX(calc(-50% + 3px))';
+      eyeIcon.innerHTML = `
+        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+        <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>`;
+    } else {
+      unpeekEyes(facePurple); unpeekEyes(faceYellow);
+      charOrange.style.transform = 'rotate(-10deg)';
+      faceOrange.style.transform = 'translateX(calc(-50% - 4px))';
+      eyeIcon.innerHTML = `
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>`;
+    }
+    pwInput.focus();
+  });
+
+  /* ══════════════════════════════════
+     🔐  LOGIN CON EMAIL + PASSWORD
+  ══════════════════════════════════ */
+  btnLogin.addEventListener('click', async () => {
+    hideError();
+    const email    = emailInput.value.trim();
+    const password = pwInput.value;
+
+    if (!email || !password) {
+      showError('Inserisci email e password.'); return;
+    }
+
+    setLoading(btnLogin, true);
+    bounceChars();
+
+    try {
+      // Persistenza: localStorage se "ricordami", sessionStorage altrimenti
+      const persistence = remember.checked
+        ? browserLocalPersistence
+        : browserSessionPersistence;
+      await setPersistence(auth, persistence);
+
+      await signInWithEmailAndPassword(auth, email, password);
+
+      // ✅ Login riuscito → reindirizza alla home (o a dashboard)
+      window.location.href = 'index.html';
+
+    } catch (err) {
+      showError(firebaseError(err.code));
+      setLoading(btnLogin, false);
+    }
+  });
+
+  /* ══════════════════════════════════
+     🔐  LOGIN CON GOOGLE
+  ══════════════════════════════════ */
+  btnGoogle.addEventListener('click', async () => {
+    hideError();
+    setLoading(btnGoogle, true);
+
+    try {
+      await signInWithPopup(auth, provider);
+      // ✅ Login Google riuscito → reindirizza
+      window.location.href = 'index.html';
+
+    } catch (err) {
+      showError(firebaseError(err.code));
+      setLoading(btnGoogle, false);
+    }
+  });
+
+  /* ── Enter key sul form ── */
+  [emailInput, pwInput].forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') btnLogin.click();
+    });
+  });
+</script>
+</body>
+</html>
